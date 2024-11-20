@@ -56,12 +56,12 @@ def _downsample(sets):
 
     return keep_set, remove_set
 
-def prepare_sets(*data, labels: np.ndarray, splits: tuple[float], downsample: bool = False) -> tuple[list[np.ndarray], list[np.ndarray], dict[float]]:
+def prepare_sets(*data, labels: np.ndarray, splits: list[float], downsample: bool = False) -> tuple[list[np.ndarray], list[np.ndarray], dict[float]]:
     """Prepare sets for training, splitting the setsaccording to the values in `split`
 
     Args:
         labels (np.ndarray): one-hot encoded numpy array, must be bidimensional (including the one-hot encoding)
-        splits (tuple[float]): values between 0 and 1, these are used as percentages to split the data, note that the process is iterative: the first value is the percentage of the data, the second is the value of the remaining data, and so on
+        splits (list[float]): values between 0 and 1, these are used as percentages to split the data, note that the process is iterative: the first value is the percentage of the data, the second is the value of the remaining data, and so on, (don't use tuples, or python become stupid)
         downsample (bool, optional): balance data downsampling it. Defaults to False.
 
     Returns:
