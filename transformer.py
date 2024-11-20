@@ -242,7 +242,7 @@ def _det_hash(input_string: str):
 def _hashtag(x: str): return _det_hash(str(x))[2:10].upper().zfill(8)
 
 _cache_path = './'
-def set_cache_path(path: str = './') -> None:
+def set_transform_cache(path: str = './') -> None:
     """Set globally the cache path for transformers
 
     Args:
