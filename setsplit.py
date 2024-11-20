@@ -43,8 +43,8 @@ def _to_remove(array, occurrencies):
 def _downsample(sets):
     y_cnt = get_numerosity(sets[-1])
     y_diff = y_cnt - np.min(y_cnt)  # remove the minimum from all of them, obtaining the exact number of values to eremove
-    remove_mask = _to_remove(sets[-1], y_diff).astype(int)
-    keep_mask = (1 - remove_mask).astype(int)
+    remove_mask = _to_remove(sets[-1], y_diff)
+    keep_mask = 1 - remove_mask
     
     keep_set   = list(map(lambda x: x[keep_mask == 1], sets))
     remove_set = list(map(lambda x: x[remove_mask == 1], sets))
