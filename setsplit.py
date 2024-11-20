@@ -69,7 +69,8 @@ def prepare_sets(*data, labels: np.ndarray, splits: tuple[float], downsample: bo
     """
     class_weight = None
     remainder = None
-    data = list(data).append(labels)    # ensures that labels is in the correct position, also helps visualizing labels data
+    data = list(data)
+    data.append(labels)    # ensures that labels is in the correct position, also helps visualizing labels data
     if downsample:
         data, remainder = _downsample(data)
     else:
