@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='tworkflow',
+    name='t_workflow',
     version='0.0.1',
     author='3isvogel',
     author='tapered475@gmail.com',
