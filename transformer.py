@@ -1,13 +1,13 @@
-import numpy                as _np
+import numpy                as np
 import os                   as _os
 import time                 as _time
 import multiprocessing      as _mp
 import matplotlib.pyplot    as _plt
 import hashlib              as _hl
 
-from typing import Callable as _Callable, Iterable as _Iterable
+from typing import Callable, Iterable
 
-def l_map(func: _Callable, array: _Iterable) -> list:
+def l_map(func: Callable, array: Iterable) -> list:
     """Compact map function
 
     Args:
@@ -19,7 +19,7 @@ def l_map(func: _Callable, array: _Iterable) -> list:
     """
     return list(map(func, array))
 
-def np_map(func: _Callable, array: _Iterable) -> _np.ndarray:
+def np_map(func: Callable, array: Iterable) -> np.ndarray:
     """Compact map funciton, converts output into np.array
 
     Args:
@@ -29,7 +29,7 @@ def np_map(func: _Callable, array: _Iterable) -> _np.ndarray:
     Returns:
         np.ndarray: result of applying map, transformed into array
     """
-    return _np.array(l_map(func, array))
+    return np.array(l_map(func, array))
 
 def _hms(time: float) -> str:
     """Stringify time in m:s:ms fromat
@@ -47,7 +47,7 @@ def _hms(time: float) -> str:
     s, ms = divmod(time, 1)
     return f'{int(m)}:{int(s)}:{int(ms*1000)}'
 
-def _guard(array) -> _np.ndarray:
+def _guard(array) -> np.ndarray:
     """Set NaNs and infinite values to 0
 
     Args:
@@ -56,11 +56,11 @@ def _guard(array) -> _np.ndarray:
     Returns:
         np.ndarray: array with substitutions
     """
-    if not _np.isfinite(array).all(): print(f'\033[91mFound not-finite values, replacing with 0s\033[0m')
-    array = _np.nan_to_num(array, nan=0, posinf=0, neginf=0)
+    if not np.isfinite(array).all(): print(f'\033[91mFound not-finite values, replacing with 0s\033[0m')
+    array = np.nan_to_num(array, nan=0, posinf=0, neginf=0)
     return array
 
-def _pipe_transform_apply(steps: _Iterable[_Callable], array: _np.ndarray, verbose: bool = True) -> _np.ndarray:
+def _pipe_transform_apply(steps: Iterable[Callable], array: np.ndarray, verbose: bool = True) -> np.ndarray:
     """transform the input array and outputs statistics of the computation
 
     Args:
@@ -88,22 +88,22 @@ def _pipe_transform_apply(steps: _Iterable[_Callable], array: _np.ndarray, verbo
 def _unpacking_apply_along_axis(all_args):
     """Unpacks args for `np.apply_along_axis`"""
     (func1d, axis, arr, args, kwargs) = all_args
-    return _np.apply_along_axis(func1d, axis, arr, *args, **kwargs)
+    return np.apply_along_axis(func1d, axis, arr, *args, **kwargs)
 
 def _parallel_apply_along_axis(func1d, axis, arr, *args, **kwargs):
     """Multithreaded variant of `np.apply_along_axis`"""
     effective_axis = 1 if axis == 0 else axis
     if effective_axis != axis: arr = arr.swapaxes(axis, effective_axis)
-    chunks = [(func1d, effective_axis, sub_arr, args, kwargs) for sub_arr in _np.array_split(arr, _mp.cpu_count())]
+    chunks = [(func1d, effective_axis, sub_arr, args, kwargs) for sub_arr in np.array_split(arr, _mp.cpu_count())]
     pool = _mp.Pool()
     individual_results = pool.map(_unpacking_apply_along_axis, chunks)
     pool.close(); pool.join()
-    arr = _np.concatenate(individual_results)
+    arr = np.concatenate(individual_results)
     # In case of functions returning multiple values, preserve order of dimensions
     if effective_axis != axis: arr = arr.swapaxes(axis, effective_axis)
     return arr
 
-def to_ax(function: _Callable, axis: int = -1, threadsafe: bool = False) -> _Callable:
+def to_ax(function: Callable, axis: int = -1, threadsafe: bool = False) -> Callable:
     """Returns a lambda, applying the desired function along the axis of the input tensor for using in `Transformer`
 
     Args:
@@ -115,12 +115,12 @@ def to_ax(function: _Callable, axis: int = -1, threadsafe: bool = False) -> _Cal
         Callable: lambda to transform the tensor
     """
     x = None
-    if threadsafe: x = lambda x: _np.apply_along_axis(function, axis, x)
+    if threadsafe: x = lambda x: np.apply_along_axis(function, axis, x)
     else:    x = lambda x: _parallel_apply_along_axis(function, axis, x)
     x.__name__ = f'to_ax[{axis}]: {function.__name__}'
     return x
 
-def moveaxis(from_axis: int, to_axis: int) -> _Callable:
+def moveaxis(from_axis: int, to_axis: int) -> Callable:
     """Move the axis of a tensor from position `from_axis` to position `to_axis`, for uing in `Transformer`
 
     Args:
@@ -130,7 +130,7 @@ def moveaxis(from_axis: int, to_axis: int) -> _Callable:
     Returns:
         Callable: lambda to transform the tensor
     """
-    t = lambda x: _np.moveaxis(x, from_axis, to_axis)
+    t = lambda x: np.moveaxis(x, from_axis, to_axis)
     t.__name__ = f"moveaxis[{from_axis}, {to_axis}]"
     return t
 
@@ -147,7 +147,7 @@ def _plot_timing(pipe, val, name, size: tuple = (12,9)):
     _plt.title(name)
     _plt.show()
 
-def _tensor_apply_transform(data: _np.ndarray, name: str = 'Unknown', transforms: _Iterable[_Callable] = [], verbose = True) -> _np.ndarray:
+def _tensor_apply_transform(data: np.ndarray, name: str = 'Unknown', transforms: Iterable[Callable] = [], verbose = True) -> np.ndarray:
     """Toplevel function for transforming tensors
 
     Args:
@@ -165,7 +165,7 @@ def _tensor_apply_transform(data: _np.ndarray, name: str = 'Unknown', transforms
     return data
 
 class Transformer:
-    def __init__(self, name: str, verbose: bool = True, transforms: _Iterable[_Callable] = []):
+    def __init__(self, name: str, verbose: bool = True, transforms: Iterable[Callable] = []):
         """Create a new `Transformer` object
 
         Args:
@@ -178,7 +178,7 @@ class Transformer:
     def call(self, x):
         return self.l(x)
 
-def value_repeat(times: int, axis: int = -1) -> _Callable:
+def value_repeat(times: int, axis: int = -1) -> Callable:
     """Repeat the values on specified axis, for using in `Transformer`
 
     Args:
@@ -188,12 +188,12 @@ def value_repeat(times: int, axis: int = -1) -> _Callable:
     Returns:
         Callable: lambda to transform the tensor
     """
-    l = lambda x: _np.repeat(_np.expand_dims(x, axis=axis), times, axis=axis)
+    l = lambda x: np.repeat(np.expand_dims(x, axis=axis), times, axis=axis)
     l.__name__ = f'repeat[{times}, {axis}, {axis}]'
     return l
 
 # Segment channels
-def split(segments_n: int) -> _Callable:
+def split(segments_n: int) -> Callable:
     """Split array, for using in `Transformer`
 
     Args:
@@ -202,15 +202,15 @@ def split(segments_n: int) -> _Callable:
     Returns:
         Callable: lambda to transform the tensor
     """
-    l = lambda x: _np.split(x, segments_n)
+    l = lambda x: np.split(x, segments_n)
     l.__name__ = f'segment[{segments_n}]'
     return l
 
 def _onehot_back(x,n):
-    if n is None: _, n = _np.unique(x, return_counts=True)
-    return _np.eye(n)[x] 
+    if n is None: _, n = np.unique(x, return_counts=True)
+    return np.eye(n)[x] 
 
-def onehot(n = None) -> _Callable:
+def onehot(n = None) -> Callable:
     """Encode the vector using one-hot encoding, for use in `Transform`
 
     Args:
@@ -221,7 +221,7 @@ def onehot(n = None) -> _Callable:
     """
     return lambda x: _onehot_back(x,n)
 
-def flatten(x: _np.ndarray) -> _np.ndarray:
+def flatten(x: np.ndarray) -> np.ndarray:
     """Flatten, for use in `Transform`
 
     Args:
@@ -241,7 +241,7 @@ def _det_hash(input_string: str):
 
 def _hashtag(x: str): return _det_hash(str(x))[2:10].upper().zfill(8)
 
-def cached_transform(input: _np.ndarray, transformer: Transformer, name: str, path: str = './', force: bool = False) -> _np.ndarray:
+def cached_transform(input: np.ndarray, transformer: Transformer, name: str, path: str = './', force: bool = False) -> np.ndarray:
     """if a cache file "<`path`><`name`>_<`Tensor hash`>.npy" exists, load the tensor from it, otherwise apply the tensor to the specified input
 
     Args:
@@ -265,10 +265,10 @@ def cached_transform(input: _np.ndarray, transformer: Transformer, name: str, pa
         else:
             print(f'\033[33mForced generation of {filename}\033[0m')
         t = transformer(input)
-        _np.save(cache_file, t)
+        np.save(cache_file, t)
         print(f'\033[33mTensor saved to {filename}\033[0m')
     else:
-        t = _np.load(cache_file)
+        t = np.load(cache_file)
         print(f'\033[33mTensor loaded from {filename}\033[0m')
         print(f'    {t.shape}')
     return t
