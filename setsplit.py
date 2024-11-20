@@ -55,7 +55,7 @@ def _downsample(sets):
     keep_set   = list(map(lambda x: x[keep_mask], sets))
     remove_set = list(map(lambda x: x[remove_mask], sets))
 
-    return keep_set, remove_set
+    return [keep_set, remove_set]
 
 def prepare_sets(*data, labels: np.ndarray, splits: list[float], downsample: bool = False) -> tuple[list[np.ndarray], list[np.ndarray], dict[float]]:
     """Prepare sets for training, splitting the setsaccording to the values in `split`
@@ -77,4 +77,4 @@ def prepare_sets(*data, labels: np.ndarray, splits: list[float], downsample: boo
     else:
         class_weight = _get_class_weight(data[-1])
     sets = _set_split(data, splits)
-    return sets, remainder, class_weight
+    return [sets, remainder, class_weight]
