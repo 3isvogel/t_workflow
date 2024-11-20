@@ -13,17 +13,12 @@ def get_numerosity(labels: np.ndarray) -> np.ndarray:
     axis=tuple(i for i in range(labels.ndim - 1))
     return np.sum(labels, axis=axis)
 
-# Compute class weight
 def _get_class_weight(labels):
     class_num = get_numerosity(labels)
-    print(f'Count: {class_num}')
     total_samples = np.sum(class_num)
-    # Previous weight was wrong
     class_weight = {i: total_samples / (len(class_num) * class_num[i]) for i in range(len(class_num))}
-    print(f'Normalized class weight: {class_weight}')
     return class_weight
 
-#   for each vector, for the love of God use labels as the last argument
 from sklearn.model_selection import train_test_split
 def _set_split(data, split):
     sets = []
@@ -46,14 +41,13 @@ def _to_remove(array, occurrencies):
     return mask
 
 def _downsample(sets):
-    # TODO: shuffle the set somewhere
     y_cnt = get_numerosity(sets[-1])
     y_diff = y_cnt - np.min(y_cnt)  # remove the minimum from all of them, obtaining the exact number of values to eremove
     remove_mask = _to_remove(sets[-1], y_diff)
     keep_mask = 1 - remove_mask
     
-    keep_set   = list(map(lambda x: x[keep_mask], sets))
-    remove_set = list(map(lambda x: x[remove_mask], sets))
+    keep_set   = list(map(lambda x: x[keep_mask == 1], sets))
+    remove_set = list(map(lambda x: x[remove_mask == 1], sets))
 
     return keep_set, remove_set
 
@@ -71,7 +65,7 @@ def prepare_sets(*data, labels: np.ndarray, splits: list[float], downsample: boo
     class_weight = None
     remainder = None
     data = list(data)
-    data.append(labels)    # ensures that labels is in the correct position, also helps visualizing labels data
+    data.append(labels)
     if downsample:
         data, remainder = _downsample(data)
     else:
