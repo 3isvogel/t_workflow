@@ -193,7 +193,7 @@ def value_repeat(times: int, axis: int = -1) -> Callable:
     return l
 
 # Segment channels
-def split_split(segments_n: int) -> Callable:
+def segment_split(segments_n: int) -> Callable:
     """Split array, for use in `Transformer`
 
     Args:
