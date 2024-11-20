@@ -175,7 +175,7 @@ class Transformer:
         """
         self.l = lambda x: _tensor_apply_transform(x, name, transforms, verbose)
         self.l.__name__ = f'transformer: {name} - {str(l_map(lambda x: x.__name__, transforms))}'
-    def call(self, x):
+    def __call__(self, x):
         return self.l(x)
 
 def value_repeat(times: int, axis: int = -1) -> Callable:
