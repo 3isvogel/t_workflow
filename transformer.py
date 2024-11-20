@@ -104,7 +104,7 @@ def _parallel_apply_along_axis(func1d, axis, arr, *args, **kwargs):
     return arr
 
 def to_ax(function: Callable, axis: int = -1, safe: bool = False) -> Callable:
-    """Returns a lambda, applying the desired function along the axis of the input tensor for using in `Transformer`
+    """Returns a lambda, applying the desired function along the axis of the input tensor for use in `Transformer`
 
     Args:
         function (Callable): the transform to apply
@@ -179,7 +179,7 @@ class Transformer:
         return self.l(x)
 
 def value_repeat(times: int, axis: int = -1) -> Callable:
-    """Repeat the values on specified axis, for using in `Transformer`
+    """Repeat the values on specified axis, for use in `Transformer`
 
     Args:
         times (int): number of times to repeat the values
@@ -193,8 +193,8 @@ def value_repeat(times: int, axis: int = -1) -> Callable:
     return l
 
 # Segment channels
-def split(segments_n: int) -> Callable:
-    """Split array, for using in `Transformer`
+def split_split(segments_n: int) -> Callable:
+    """Split array, for use in `Transformer`
 
     Args:
         segments_n (int): number of segments
