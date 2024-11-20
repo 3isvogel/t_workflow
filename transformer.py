@@ -251,7 +251,7 @@ def set_transform_cache(path: str = './') -> None:
     global _cache_path
     _cache_path = path
 
-def cached_transform(input: np.ndarray, transformer: Transformer, name: str, path: str = _cache_path, force: bool = False) -> np.ndarray:
+def cached_transform(input: np.ndarray, transformer: Transformer, name: str, path: str = None, force: bool = False) -> np.ndarray:
     """if a cache file "<`path`><`name`>_<`Tensor hash`>.npy" exists, load the tensor from it, otherwise apply the tensor to the specified input
 
     Args:
@@ -264,6 +264,7 @@ def cached_transform(input: np.ndarray, transformer: Transformer, name: str, pat
     Returns:
         np.ndarray: transformed tensor
     """
+    if path is None: path = _cache_path
     transformer_pipe_name = '#'.join(transformer.l.__name__)
     name_hash = _hashtag(transformer_pipe_name)
     cache_file = f'{path}{name}_{name_hash}.npy'
