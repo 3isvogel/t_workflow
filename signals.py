@@ -17,7 +17,7 @@ def pass_filter(band: tuple[float, float], sample_f:float, btype='band', order: 
     Returns:
         Callable: lambda for transforming tensor
     """
-    low, high = band
+    low, high= band
     nyq  = 0.5 * sample_f
     a = None; b = None; l = None
     if btype == 'band':

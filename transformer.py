@@ -241,7 +241,16 @@ def _det_hash(input_string: str):
 
 def _hashtag(x: str): return _det_hash(str(x))[2:10].upper().zfill(8)
 
-def cached_transform(input: np.ndarray, transformer: Transformer, name: str, path: str = './', force: bool = False) -> np.ndarray:
+_cache_path = './'
+def set_cache_path(path: str = './') -> None:
+    """Set globally the cache path for transformers
+
+    Args:
+        path (str, optional): the path to use. Defaults to './'.
+    """
+    global _cache_path
+
+def cached_transform(input: np.ndarray, transformer: Transformer, name: str, path: str = _cache_path, force: bool = False) -> np.ndarray:
     """if a cache file "<`path`><`name`>_<`Tensor hash`>.npy" exists, load the tensor from it, otherwise apply the tensor to the specified input
 
     Args:
