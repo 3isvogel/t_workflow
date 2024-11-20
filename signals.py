@@ -1,6 +1,6 @@
 from typing import Callable
 
-from scipy.signal import _butter, _filtfilt
+from scipy.signal import butter as _butter, filtfilt as _filtfilt
 def pass_filter(band: tuple[float, float], sample_f:float, btype='band', order: int = 3) -> Callable:
     
     """Apply butter filter to a signal, for use with `Transformer`
