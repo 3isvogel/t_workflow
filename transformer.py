@@ -103,19 +103,19 @@ def _parallel_apply_along_axis(func1d, axis, arr, *args, **kwargs):
     if effective_axis != axis: arr = arr.swapaxes(axis, effective_axis)
     return arr
 
-def to_ax(function: Callable, axis: int = -1, safe: bool = False) -> Callable:
+def to_ax(function: Callable, axis: int = -1, threadsafe: bool = False) -> Callable:
     """Returns a lambda, applying the desired function along the axis of the input tensor for using in `Transformer`
 
     Args:
         function (Callable): the transform to apply
         axis (int, optional): the axis along which the transform must be applied. Defaults to -1.
-        safe (bool, optional): disable multithreaded version of function, for use with lambdas. Defaults to False.
+        threadsafe (bool, optional): disable multithreaded version of function, for use with lambdas. Defaults to False.
 
     Returns:
         Callable: lambda to transform the tensor
     """
     x = None
-    if safe: x = lambda x: np.apply_along_axis(function, axis, x)
+    if threadsafe: x = lambda x: np.apply_along_axis(function, axis, x)
     else:    x = lambda x: _parallel_apply_along_axis(function, axis, x)
     x.__name__ = f'to_ax[{axis}]: {function.__name__}'
     return x
@@ -254,7 +254,7 @@ def cached_transform(input: np.ndarray, transformer: Transformer, name: str, pat
     Returns:
         np.ndarray: transformed tensor
     """
-    transformer_pipe_name = '#'.join(transformer.__name__)
+    transformer_pipe_name = '#'.join(transformer.l.__name__)
     name_hash = _hashtag(transformer_pipe_name)
     cache_file = f'{path}{name}_{name_hash}.npy'
     filename = cache_file.split('/')[-1]
