@@ -32,6 +32,7 @@ def _set_split(data, split):
         setk = data[ ::2]
         data = data[1::2]
         sets.append(setk)
+    sets.append(data)
     return sets
 
 def _to_remove(array, occurrencies):
