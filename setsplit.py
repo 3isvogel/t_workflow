@@ -22,7 +22,7 @@ def _get_class_weight(labels):
     return class_weight
 
 from sklearn.model_selection import train_test_split
-def _set_split(data, split):
+def _set_split(data, split) -> list[np.ndarray]:
     sets = []
     for i in range(len(split)):
         data = train_test_split(*data, stratify=data[-1], train_size = split[i], shuffle = True)
@@ -52,7 +52,7 @@ def _downsample(sets):
 
     return keep_set, remove_set
 
-def prepare_sets(*data, labels: np.ndarray, splits: Iterable[float], downsample: bool = False) -> Iterable[Iterable[np.ndarray], Iterable[np.ndarray], dict[float]]:
+def prepare_sets(*data, labels: np.ndarray, splits: Iterable[float], downsample: bool = False) -> tuple[list[np.ndarray], Iterable[np.ndarray], dict[float]]:
     """Prepare sets for training, splitting the setsaccording to the values in `split`
 
     Args:
@@ -61,7 +61,7 @@ def prepare_sets(*data, labels: np.ndarray, splits: Iterable[float], downsample:
         downsample (bool, optional): balance data downsampling it. Defaults to False.
 
     Returns:
-        Iterable[Iterable[np.ndarray], Iterable[np.ndarray], dict[float]]: `sets, remainder, class_weight` the first element is the actual split, remainder is the remaining data from downsampling, `class_weight` is the inverse of numersoity, as required by `Model.fit` for reducing overfit, according to the value of `downsample` either `remainder` or `class_weight` is None
+        tuple[list[np.ndarray], Iterable[np.ndarray], dict[float]]: `sets, remainder, class_weight` the first element is the actual split, remainder is the remaining data from downsampling, `class_weight` is the inverse of numersoity, as required by `Model.fit` for reducing overfit, according to the value of `downsample` either `remainder` or `class_weight` is None
     """
     class_weight = None
     remainder = None
