@@ -1,3 +1,5 @@
+from typing import Iterable
+
 import numpy as np
 def get_numerosity(labels: np.ndarray) -> np.ndarray:
     """Get numerosity from a one-hot encoded numpy array with two dimensions (including one-hot)
@@ -31,7 +33,6 @@ def _set_split(data, split):
     return sets
 
 def _to_remove(array, occurrencies):
-    occurrencies = occurrencies.astype(int)
     mask = np.zeros(len(array), dtype=int)
     for i in range(len(occurrencies)):
         indices = np.argwhere(array[..., i] == 1)[..., 0]
@@ -51,16 +52,16 @@ def _downsample(sets):
 
     return keep_set, remove_set
 
-def prepare_sets(*data, labels: np.ndarray, splits: list[float], downsample: bool = False) -> tuple[list[np.ndarray], list[np.ndarray], dict[float]]:
+def prepare_sets(*data, labels: np.ndarray, splits: Iterable[float], downsample: bool = False) -> Iterable[Iterable[np.ndarray], Iterable[np.ndarray], dict[float]]:
     """Prepare sets for training, splitting the setsaccording to the values in `split`
 
     Args:
         labels (np.ndarray): one-hot encoded numpy array, must be bidimensional (including the one-hot encoding)
-        splits (list[float]): values between 0 and 1, these are used as percentages to split the data, note that the process is iterative: the first value is the percentage of the data, the second is the value of the remaining data, and so on, (don't use tuples, or python become stupid)
+        splits (Iterable[float]): values between 0 and 1, these are used as percentages to split the data, note that the process is iterative: the first value is the percentage of the data, the second is the value of the remaining data, and so on, (don't use tuples, or python become stupid)
         downsample (bool, optional): balance data downsampling it. Defaults to False.
 
     Returns:
-        tuple[list[np.ndarray], list[np.ndarray], dict[float]]: `sets, remainder, class_weight` the first element is the actual split, remainder is the remaining data from downsampling, `class_weight` is the inverse of numersoity, as required by `Model.fit` for reducing overfit, according to the value of `downsample` either `remainder` or `class_weight` is None
+        Iterable[Iterable[np.ndarray], Iterable[np.ndarray], dict[float]]: `sets, remainder, class_weight` the first element is the actual split, remainder is the remaining data from downsampling, `class_weight` is the inverse of numersoity, as required by `Model.fit` for reducing overfit, according to the value of `downsample` either `remainder` or `class_weight` is None
     """
     class_weight = None
     remainder = None

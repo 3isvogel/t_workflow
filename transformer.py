@@ -283,3 +283,21 @@ def cached_transform(input: np.ndarray, transformer: Transformer, name: str, pat
         print(f'\033[33mTensor loaded from {filename}\033[0m')
         print(f'    {t.shape}')
     return t
+
+
+def _pipe_model_apply(functions: Iterable[Callable], l):
+    processed = l
+    for step in functions:
+        processed = step(processed)
+    return processed
+
+def pipe(functions: Iterable[Callable]) -> Callable:
+    """Returns a lambda that iteratively apply the specified functions to its input
+
+    Args:
+        layers (Iterable[Callable]): list of functions to apply
+
+    Returns:
+        Callable: A lambda that passes its arguments through the list of functions
+    """
+    return lambda x: _pipe_model_apply(functions, x)

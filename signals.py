@@ -1,12 +1,12 @@
-from typing import Callable
+from typing import Callable,Iterable
 
 from scipy.signal import butter as _butter, filtfilt as _filtfilt
-def pass_filter(band: tuple[float, float], sample_f:float, btype='band', order: int = 3) -> Callable:
+def pass_filter(band: Iterable[float, float], sample_f:float, btype='band', order: int = 3) -> Callable:
     
     """Apply butter filter to a signal, for use with `Transformer`
 
     Args:
-        band (tuple[float, float]) two ends of the band to use, low end is not used for low-pass, high end is not used for high-pass
+        band (Iterable[float, float]) two ends of the band to use, low end is not used for low-pass, high end is not used for high-pass
         sample_f (float): sampling frequency of signal
         btype (str, optional): type of filter: "low", "high" and "band" pass. Defaults to 'band'.
         order (int, optional): butter fiter order. Defaults to 3.

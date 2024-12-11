@@ -167,3 +167,9 @@ pyvenv.cfg
 
 # Old files where code is copied from
 # old/
+
+# Pyenv
+include/
+
+# DS_Store
+.DS_Store
