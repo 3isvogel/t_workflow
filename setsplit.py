@@ -37,7 +37,7 @@ def _to_remove(array, occurrencies):
     for i in range(len(occurrencies)):
         indices = np.argwhere(array[..., i] == 1)[..., 0]
         indices = np.unique(indices)
-        indices = np.random.choice(indices, occurrencies[i], replace = False)
+        indices = np.random.choice(indices, int(occurrencies[i]), replace = False)
         mask[indices] = 1
     return mask
 
