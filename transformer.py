@@ -177,6 +177,9 @@ class Transformer:
         self.l.__name__ = f'transformer: {name} - {str(l_map(lambda x: x.__name__, transforms))}'
     def __call__(self, x):
         return self.l(x)
+    # Just call the cached tranform from the Trasform itself
+    def apply(self, input: np.ndarray, name: str, path: str = None, force: bool = False):
+        return cached_transform(input, self, name, path, force)
 
 def value_repeat(times: int, axis: int = -1) -> Callable:
     """Repeat the values on specified axis, for use in `Transformer`
