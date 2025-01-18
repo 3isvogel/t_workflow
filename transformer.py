@@ -242,7 +242,7 @@ def _det_hash(input_string: str):
     hash_object.update(encoded_input)
     return hash_object.hexdigest()
 
-def _hashtag(x: str): return _det_hash(str(x))[2:10].upper().zfill(8)
+def hashtag(x: str): return _det_hash(str(x))[2:10].upper().zfill(8)
 
 _cache_path = './'
 def set_transform_cache(path: str = './') -> None:
@@ -269,7 +269,7 @@ def cached_transform(input: np.ndarray, transformer: Transformer, name: str, pat
     """
     if path is None: path = _cache_path
     transformer_pipe_name = '#'.join(transformer.l.__name__)
-    name_hash = _hashtag(transformer_pipe_name)
+    name_hash = hashtag(transformer_pipe_name)
     cache_file = f'{path}{name}_{name_hash}.npy'
     filename = cache_file.split('/')[-1]
     t = None
@@ -287,20 +287,3 @@ def cached_transform(input: np.ndarray, transformer: Transformer, name: str, pat
         print(f'    {t.shape}')
     return t
 
-
-def _pipe_model_apply(functions: Iterable[Callable], l):
-    processed = l
-    for step in functions:
-        processed = step(processed)
-    return processed
-
-def pipe(functions: Iterable[Callable]) -> Callable:
-    """Returns a lambda that iteratively apply the specified functions to its input
-
-    Args:
-        layers (Iterable[Callable]): list of functions to apply
-
-    Returns:
-        Callable: A lambda that passes its arguments through the list of functions
-    """
-    return lambda x: _pipe_model_apply(functions, x)
