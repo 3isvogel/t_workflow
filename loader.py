@@ -35,8 +35,8 @@ def set_dataset_cache(directory: str) -> None:
 import _pickle as cPickle
 def _default_load_pickle(name: str) -> dict:
     t = cPickle.load(
-        open(name, 'rb',
-        encoding='latin1'))
+        open(name, 'rb')
+        encoding='latin1')
     print('‾',end='')
     return t
 
