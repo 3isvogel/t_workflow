@@ -50,7 +50,7 @@ def _load_parallel_dataset(file_list: Iterable, open_function: Callable) -> Iter
     return dataset
 
 import numpy as np
-from transformer import np_map, hashtag
+from t_workflow.transformer import np_map, hashtag
 DATA_CACHE = '' 
 LABL_CACHE = ''
 def load_pickle(file_list: list[str], open_function: Callable = _default_load_pickle) -> tuple[np.ndarray, np.ndarray]:
