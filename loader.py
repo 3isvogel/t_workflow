@@ -66,8 +66,8 @@ def load_pickle(file_list: list[str], open_function: Callable = _default_load_pi
     global DATA_CACHE
     global LABL_CACHE
     ht = hashtag(str(file_list))
-    DATA_CACHE = os.path.join(CACHE_DIR, f'_data-{ht}.npy')
-    LABL_CACHE = os.path.join(CACHE_DIR, f'_labl{ht}.npy')
+    DATA_CACHE = os.path.join(CACHE_DIR, f'_data_{ht}.npy')
+    LABL_CACHE = os.path.join(CACHE_DIR, f'_labl_{ht}.npy')
     t_data = None; t_labels = None
     # If already saved as numpy array: load the numpy array instead
     if not os.path.exists(CACHE_DIR): os.makedirs(CACHE_DIR)
