@@ -17,17 +17,21 @@ def pipe(functions: Iterable[Callable]) -> Callable:
     """
     return lambda x: _pipe_model_apply(functions, x)
 
-try:
-    import tensorflow as tf
-except Exception as e:
-    raise ValueError(f'Tensorflow not installed: {e}')
+# Please install tensorflow
+import tensorflow as tf
 
 class SelfAttention(tf.keras.Model):
-    def __init__(self, units):
+    def __init__(self, score_units: int, attention_units: int = 1):
+        """Create Bahdanau attention layer
+
+        Args:
+            score_units (int): Number of units in the score computation
+            attention_units (int, optional): Number of units in the attention weights computation, must be compatible with the input size. Defaults to 1.
+        """
         super(SelfAttention, self).__init__()
-        self.W1 = tf.keras.layers.Dense(units)
-        self.W2 = tf.keras.layers.Dense(units)
-        self.V = tf.keras.layers.Dense(1)
+        self.W1 = tf.keras.layers.Dense(score_units)
+        self.W2 = tf.keras.layers.Dense(score_units)
+        self.V = tf.keras.layers.Dense(attention_units)
 
     def call(self, features, hidden):
         hidden_with_time_axis = tf.expand_dims(hidden, 1)
@@ -37,17 +41,25 @@ class SelfAttention(tf.keras.Model):
         context_vector = tf.reduce_sum(context_vector, axis=1)
         return context_vector
     
-
-try:
-    import keras
-except Exception as e:
-    raise ValueError(f'Keras not installed: {e}')
+# Pleas install keras
+import keras
 from keras.layers import Conv2D, Dropout
 
 def BaseConv2D(filters: int,
                kernel_size: tuple[int,int] = (4,4),
                padding: str = 'same',
                dropout: float = 0.25):
+    """Concatenate a 2D convolution layer with a dropout layer
+
+    Args:
+        filters (int): 2D convolution kernels to use
+        kernel_size (tuple[int,int], optional): Size of the convolution kernel. Defaults to (4,4).
+        padding (str, optional): Padding to use, see Keras `Conv2D` for more informations. Defaults to 'same'.
+        dropout (float, optional): Dropout portion. Defaults to 0.25.
+
+    Returns:
+        _type_: _description_
+    """
     return pipe([Conv2D(filters,
                               kernel_size=kernel_size,
                               padding=padding,
