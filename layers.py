@@ -39,7 +39,7 @@ class SelfAttention(tf.keras.Model):
     def build(self, input_shape):
         self.W1 = tf.keras.layers.Dense(self.score_units)
         self.W2 = tf.keras.layers.Dense(self.score_units)
-        self.V = tf.keras.layers.Dense(input_shape[1] if self.dimension == 2 else 1)
+        self.V = tf.keras.layers.Dense(input_shape[-1] if self.dimension == 2 else 1)
         super(SelfAttention, self).build(input_shape)
 
     def call(self, features, hidden):
