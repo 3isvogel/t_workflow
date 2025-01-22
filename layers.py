@@ -21,17 +21,26 @@ def pipe(functions: Iterable[Callable]) -> Callable:
 import tensorflow as tf
 
 class SelfAttention(tf.keras.Model):
-    def __init__(self, score_units: int, attention_units: int = 1):
+    def __init__(self, score_units: int, dimension = 1):
         """Create Bahdanau attention layer
 
         Args:
             score_units (int): Number of units in the score computation
-            attention_units (int, optional): Number of units in the attention weights computation, must be compatible with the input size. Defaults to 1.
+            dimension (int, optional): Dimension of the attention map: 1 for unidimensional, 2 for bidimensional
+        Raises:
+            ValuError: If `dimension` is neither 1 or 2
         """
         super(SelfAttention, self).__init__()
-        self.W1 = tf.keras.layers.Dense(score_units)
-        self.W2 = tf.keras.layers.Dense(score_units)
-        self.V = tf.keras.layers.Dense(attention_units)
+        if dimension not in [1,2]:
+            raise ValueError('Dimensions must be either 1 or 2')
+        self.score_units = score_units
+        self.dimension = dimension
+
+    def build(self, input_shape):
+        self.W1 = tf.keras.layers.Dense(self.score_units)
+        self.W2 = tf.keras.layers.Dense(self.score_units)
+        self.V = tf.keras.layers.Dense(input_shape[0][1] if self.dimension == 2 else 1)
+        super(SelfAttention, self).build(input_shape)
 
     def call(self, features, hidden):
         hidden_with_time_axis = tf.expand_dims(hidden, 1)
